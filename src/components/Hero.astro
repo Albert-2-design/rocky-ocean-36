@@ -1,0 +1,274 @@
+---
+import { Image } from 'astro:assets';
+import hero1 from '../assets/hero/hero-main.jpg'; // bugg ved brygge, sol
+import hero2 from '../assets/hero/hero-02.jpg';   // forankret i fjordlandskap
+import hero3 from '../assets/hero/hero-03.jpg';   // sideprofil i fjord
+import hero4 from '../assets/hero/hero-04.png';   // Ålesund kai, skyer
+import hero5 from '../assets/hero/hero-05.jpg';   // cockpit på sjøen
+
+const slides = [
+  { src: hero1, pos: 'center 35%', alt: 'Rocky Ocean ved bryggen' },
+  { src: hero2, pos: 'center 50%', alt: 'Rocky Ocean forankret i fjorden' },
+  { src: hero3, pos: 'center 40%', alt: 'Rocky Ocean – sideprofil' },
+  { src: hero4, pos: 'center 45%', alt: 'Rocky Ocean i Ålesund' },
+  { src: hero5, pos: 'center 30%', alt: 'Rocky Ocean på sjøen' },
+];
+---
+
+<section class="hero" id="toppen">
+  <div class="hero-slides">
+    {slides.map((slide, i) => (
+      <div class={`slide${i === 0 ? ' active' : ''}`} data-index={i}>
+        <Image
+          src={slide.src}
+          alt={slide.alt}
+          widths={[1200, 1920, 2560]}
+          sizes="100vw"
+          quality={92}
+          class="slide-img"
+          loading={i === 0 ? 'eager' : 'lazy'}
+          decoding="async"
+          style={`object-position: ${slide.pos}`}
+        />
+      </div>
+    ))}
+
+    <!-- Gradient overlays -->
+    <div class="hero-overlay-vignette"></div>
+    <div class="hero-overlay-bottom"></div>
+  </div>
+
+  <!-- Innhold -->
+  <div class="hero-content fade-up">
+    <p class="hero-eyebrow">NOR 11782</p>
+    <h1 class="display hero-title">Rocky Ocean</h1>
+    <p class="hero-sub">36 fot &nbsp;·&nbsp; ORC Club Non-Spinnaker &nbsp;·&nbsp; Ålesund</p>
+  </div>
+
+  <!-- Bildepunkt-indikatorer -->
+  <div class="hero-dots" aria-hidden="true">
+    {slides.map((_, i) => (
+      <button class={`dot${i === 0 ? ' active' : ''}`} data-dot={i} />
+    ))}
+  </div>
+
+  <!-- Scroll-indikator -->
+  <div class="hero-scroll fade-up-delay" aria-hidden="true">
+    <span></span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 580px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: #0a1420;
+  }
+
+  /* ── Slides ── */
+  .hero-slides {
+    position: absolute;
+    inset: 0;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.4s ease;
+    z-index: 0;
+  }
+
+  .slide.active {
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform;
+    /* GPU-compositing for skarpere zoom-animasjon */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    /* Hindrer browser-smoothing som gjør bilder uskarpe */
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  /* Ken Burns varianter – ulike retninger per bilde */
+  .slide:nth-child(1) .slide-img { animation: kb1 10s ease-in-out forwards; }
+  .slide:nth-child(2) .slide-img { animation: kb2 10s ease-in-out forwards; }
+  .slide:nth-child(3) .slide-img { animation: kb3 10s ease-in-out forwards; }
+  .slide:nth-child(4) .slide-img { animation: kb4 10s ease-in-out forwards; }
+  .slide:nth-child(5) .slide-img { animation: kb5 10s ease-in-out forwards; }
+
+  /* Restart Ken Burns når slide blir aktiv */
+  .slide:not(.active) .slide-img { animation: none; }
+
+  @keyframes kb1 { from { transform: scale(1.0) translate(0, 0); }    to { transform: scale(1.09) translate(-1%, 0.5%); } }
+  @keyframes kb2 { from { transform: scale(1.08) translate(1%, 0); }   to { transform: scale(1.0)  translate(0, 0); } }
+  @keyframes kb3 { from { transform: scale(1.0) translate(-1%, 1%); }  to { transform: scale(1.09) translate(0.5%, 0); } }
+  @keyframes kb4 { from { transform: scale(1.09) translate(0, -1%); }  to { transform: scale(1.0)  translate(1%, 1%); } }
+  @keyframes kb5 { from { transform: scale(1.0) translate(1%, -0.5%);} to { transform: scale(1.09) translate(0, 0); } }
+
+  /* Overlays */
+  .hero-overlay-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: radial-gradient(ellipse at 55% 45%, transparent 40%, rgba(4,10,20,0.42) 100%);
+  }
+
+  .hero-overlay-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 58%;
+    z-index: 2;
+    background: linear-gradient(to top, rgba(4,10,20,0.78) 0%, rgba(4,10,20,0.15) 55%, transparent 100%);
+  }
+
+  /* ── Innhold ── */
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    padding: 0 2.5rem 5.5rem;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(250,250,247,0.5);
+    margin-bottom: 1.25rem;
+    font-weight: 500;
+  }
+
+  .hero-title {
+    font-size: clamp(3rem, 9vw, 8.5rem);
+    color: #fff;
+    margin-bottom: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 40px rgba(4,10,20,0.35);
+    line-height: 0.95;
+  }
+
+  .hero-sub {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(250,250,247,0.45);
+    font-weight: 400;
+  }
+
+  /* ── Dots ── */
+  .hero-dots {
+    position: absolute;
+    bottom: 2.6rem;
+    left: 2.5rem;
+    z-index: 3;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .dot {
+    all: unset;
+    cursor: pointer;
+    width: 24px;
+    height: 2px;
+    background: rgba(250,250,247,0.3);
+    transition: background 0.3s, width 0.3s;
+  }
+
+  .dot.active {
+    background: rgba(250,250,247,0.9);
+    width: 40px;
+  }
+
+  /* ── Scroll-indikator ── */
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem;
+    right: 2.5rem;
+    z-index: 3;
+  }
+
+  .hero-scroll span {
+    display: block;
+    width: 1px;
+    height: 64px;
+    background: linear-gradient(to bottom, transparent, rgba(250,250,247,0.38));
+    animation: scrollLine 2.2s ease-in-out infinite;
+  }
+
+  @keyframes scrollLine {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @media (max-width: 640px) {
+    .hero-content { padding: 0 1.25rem 5rem; }
+    .hero-dots    { left: 1.25rem; }
+    .hero-scroll  { right: 1.25rem; }
+  }
+</style>
+
+<script>
+  const INTERVAL = 6000; // ms per bilde
+
+  const slides = document.querySelectorAll<HTMLElement>('.slide');
+  const dots   = document.querySelectorAll<HTMLElement>('.dot');
+  let current  = 0;
+  let timer: ReturnType<typeof setInterval>;
+
+  function goTo(index: number) {
+    // Fjern aktiv fra nåværende
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+
+    // Sett ny aktiv
+    current = (index + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+
+    // Restart Ken Burns på det aktive bildet ved å re-trigger animasjonen
+    const img = slides[current].querySelector<HTMLElement>('.slide-img');
+    if (img) {
+      img.style.animation = 'none';
+      void img.offsetWidth; // reflow trigger
+      img.style.animation = '';
+    }
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => goTo(current + 1), INTERVAL);
+  }
+
+  // Dots: klikk hopper til bilde
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      goTo(i);
+      startTimer();
+    });
+  });
+
+  // Start slideshow
+  startTimer();
+
+  // Pause ved hover
+  const hero = document.querySelector('.hero')!;
+  hero.addEventListener('mouseenter', () => clearInterval(timer));
+  hero.addEventListener('mouseleave', startTimer);
+</script>

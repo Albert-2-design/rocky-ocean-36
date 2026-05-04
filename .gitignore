@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.astro/
+snapshots/
+instagram-drafts/
+
+# Secrets
+.env
+.env.txt
+*.env.local
+
+# Store mediafiler (HEIC, MOV, rå-assets)
+assets/*.HEIC
+assets/*.heic
+assets/*.MOV
+assets/*.mov
+assets/*.mp4
+
+# Claude-internals
+.claude/settings.local.json

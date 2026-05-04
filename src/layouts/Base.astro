@@ -1,0 +1,61 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'Rocky Ocean – NOR 11782',
+  description = 'Rocky Ocean, NOR 11782 – en 36-fots seilbåt med ORC-sertifikat.',
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+
+  <nav id="site-nav">
+    <span class="nav-logo">Rocky Ocean</span>
+    <ul class="nav-links">
+      <li><a href="#om-baten">Om båten</a></li>
+      <li><a href="#spesifikasjoner">Spesifikasjoner</a></li>
+      <li><a href="#galleri">Galleri</a></li>
+    </ul>
+  </nav>
+
+  <slot />
+
+  <footer>
+    <div class="container">
+      <p>Rocky Ocean &nbsp;·&nbsp; NOR 11782 &nbsp;·&nbsp; ORC Club Non-Spinnaker 2023</p>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+
+  footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('site-nav');
+  window.addEventListener('scroll', () => {
+    nav?.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+</script>

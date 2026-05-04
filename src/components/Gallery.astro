@@ -1,0 +1,312 @@
+---
+import { Image } from 'astro:assets';
+
+// Exterior / on-water
+import ext01 from '../assets/gallery/ext-01.jpg';   // bugg ved brygge, sol
+import ext02 from '../assets/gallery/ext-02.png';   // kai i Ålesund, overskyet
+import ext03 from '../assets/gallery/ext-03.jpg';   // sideprofil i fjord
+import img13 from '../assets/gallery/img-13.jpg';   // på kran/travel-lift
+import img14 from '../assets/gallery/img-14.jpg';   // forankret, fjordlandskap
+
+// Byggehistorikk (fotoalbum)
+import img01 from '../assets/gallery/img-01.jpg';
+import img02 from '../assets/gallery/img-02.jpg';
+import img03 from '../assets/gallery/img-03.jpg';
+import img04 from '../assets/gallery/img-04.jpg';
+import img05 from '../assets/gallery/img-05.jpg';
+import img06 from '../assets/gallery/img-06.jpg';
+import img07 from '../assets/gallery/img-07.jpg';
+import img08 from '../assets/gallery/img-08.jpg';
+import img09 from '../assets/gallery/img-09.jpg';
+
+const groups = [
+  {
+    id: 'baten',
+    label: 'Båten',
+    images: [
+      { src: ext01, alt: 'Rocky Ocean ved bryggen – solfylt dag' },
+      { src: ext02, alt: 'Rocky Ocean ved kai i Ålesund' },
+      { src: ext03, alt: 'Rocky Ocean – sideprofil i fjorden' },
+      { src: img13, alt: 'Rocky Ocean på travel-lift' },
+      { src: img14, alt: 'Rocky Ocean forankret i fjordlandskap' },
+    ],
+  },
+  {
+    id: 'bygging',
+    label: 'Byggehistorikk',
+    images: [
+      { src: img01, alt: 'Bygging – skrogspanter' },
+      { src: img02, alt: 'Bygging – innvendig konstruksjon' },
+      { src: img03, alt: 'Bygging – dekk' },
+      { src: img04, alt: 'Bygging – detaljer' },
+      { src: img05, alt: 'Bygging – interiør' },
+      { src: img06, alt: 'Bygging – oversikt' },
+      { src: img07, alt: 'Bygging – rigg' },
+      { src: img08, alt: 'Bygging – siste fase' },
+      { src: img09, alt: 'Bygging – ferdigstilling' },
+    ],
+  },
+];
+
+// Flat list for lightbox (exterior first)
+const allImages = groups.flatMap(g => g.images);
+---
+
+<section id="galleri" class="gallery">
+  <div class="container">
+
+    <div class="gallery-header">
+      <p class="section-label">Galleri</p>
+      <h2 class="display gallery-title">Rocky Ocean</h2>
+    </div>
+
+    {groups.map((group, gi) => (
+      <div class="gallery-group">
+        <p class="group-label">{group.label}</p>
+        <div class="gallery-grid">
+          {group.images.map((img, li) => {
+            const globalIndex = groups.slice(0, gi).reduce((s, g) => s + g.images.length, 0) + li;
+            return (
+              <button
+                class="gallery-item"
+                data-index={globalIndex}
+                aria-label={`Åpne: ${img.alt}`}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  widths={[600, 1000]}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  quality={88}
+                  class="gallery-img"
+                  loading="lazy"
+                />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Bildegalleri" hidden>
+  <button class="lb-close" id="lb-close" aria-label="Lukk">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <button class="lb-prev" id="lb-prev" aria-label="Forrige">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="lb-img-wrap">
+    <img id="lb-img" src="" alt="" class="lb-img" />
+  </div>
+  <button class="lb-next" id="lb-next" aria-label="Neste">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <p class="lb-counter" id="lb-counter"></p>
+</div>
+
+<style>
+  .gallery {
+    padding: var(--section-pad);
+  }
+
+  .gallery-header {
+    margin-bottom: 4rem;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    font-weight: 400;
+  }
+
+  .gallery-title {
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    color: var(--ink);
+    line-height: 1.0;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .gallery-group {
+    margin-bottom: 4rem;
+  }
+
+  .group-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+
+  /* First group: larger tiles for the 5 exterior photos */
+  .gallery-group:first-of-type .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+  }
+
+  /* Make first image span 2 columns */
+  .gallery-group:first-of-type .gallery-item:first-child {
+    grid-column: span 2;
+    aspect-ratio: 16 / 9;
+  }
+
+  .gallery-item {
+    all: unset;
+    cursor: zoom-in;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--border);
+  }
+
+  .gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease, opacity 0.3s;
+    opacity: 0.93;
+  }
+
+  .gallery-item:hover .gallery-img {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(10, 16, 26, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox[hidden] { display: none; }
+
+  .lb-img-wrap {
+    max-width: 90vw;
+    max-height: 88vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lb-img {
+    max-width: 90vw;
+    max-height: 88vh;
+    object-fit: contain;
+    user-select: none;
+  }
+
+  .lb-close,
+  .lb-prev,
+  .lb-next {
+    all: unset;
+    cursor: pointer;
+    color: rgba(250, 250, 247, 0.65);
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .lb-close:hover, .lb-prev:hover, .lb-next:hover { color: #fff; }
+
+  .lb-close  { position: absolute; top: 1.5rem; right: 1.5rem; }
+  .lb-prev   { position: absolute; left: 1rem; }
+  .lb-next   { position: absolute; right: 1rem; }
+
+  .lb-counter {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: rgba(250, 250, 247, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .gallery-grid,
+    .gallery-group:first-of-type .gallery-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .gallery-group:first-of-type .gallery-item:first-child {
+      grid-column: span 2;
+    }
+    .lb-prev { left: 0.25rem; }
+    .lb-next { right: 0.25rem; }
+  }
+
+  @media (max-width: 480px) {
+    .gallery-grid,
+    .gallery-group:first-of-type .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+    .gallery-group:first-of-type .gallery-item:first-child {
+      grid-column: span 1;
+    }
+  }
+</style>
+
+<script>
+  const items   = document.querySelectorAll<HTMLButtonElement>('.gallery-item');
+  const lb      = document.getElementById('lightbox')!;
+  const lbImg   = document.getElementById('lb-img') as HTMLImageElement;
+  const lbCtr   = document.getElementById('lb-counter')!;
+
+  const srcs: string[] = Array.from(items).map(btn =>
+    (btn.querySelector('img') as HTMLImageElement).src
+  );
+
+  let current = 0;
+
+  function show(index: number) {
+    current = (index + srcs.length) % srcs.length;
+    lbImg.src = srcs[current];
+    lbCtr.textContent = `${current + 1} / ${srcs.length}`;
+    lb.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lb.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+
+  items.forEach((btn, i) => btn.addEventListener('click', () => show(i)));
+  document.getElementById('lb-close')!.addEventListener('click', close);
+  document.getElementById('lb-prev')!.addEventListener('click', () => show(current - 1));
+  document.getElementById('lb-next')!.addEventListener('click', () => show(current + 1));
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+
+  document.addEventListener('keydown', e => {
+    if (lb.hasAttribute('hidden')) return;
+    if (e.key === 'Escape')      close();
+    if (e.key === 'ArrowLeft')   show(current - 1);
+    if (e.key === 'ArrowRight')  show(current + 1);
+  });
+</script>
